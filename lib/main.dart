@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'todo_list_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,125 +11,58 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Todo List',
+      title: 'To-Do-It',
       theme: ThemeData(
-        colorScheme: ColorScheme.dark(
-          primary: Colors.blue,
-          secondary: Colors.blueAccent,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const TodoListScreen(),
+      home: const MainPage(),
     );
   }
 }
 
-class TodoListScreen extends StatefulWidget {
-  const TodoListScreen({super.key});
-
-  @override
-  State<TodoListScreen> createState() => _TodoListScreenState();
-}
-
-class _TodoListScreenState extends State<TodoListScreen> {
-  final List<TodoItem> _todos = [];
-  final TextEditingController _controller = TextEditingController();
-
-  void _addTodo(String title) {
-    if (title.isEmpty) return;
-    setState(() {
-      _todos.add(TodoItem(title: title));
-      _controller.clear();
-    });
-  }
-
-  void _toggleTodo(int index) {
-    setState(() {
-      _todos[index].isCompleted = !_todos[index].isCompleted;
-    });
-  }
-
-  void _deleteTodo(int index) {
-    setState(() {
-      _todos.removeAt(index);
-    });
-  }
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Todo List'),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Add a new task',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: _addTodo,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: () => _addTodo(_controller.text),
-                  child: const Text('Add'),
-                ),
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Spacer(),
+            const Text(
+              'To-Do-It',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _todos.length,
-              itemBuilder: (context, index) {
-                final todo = _todos[index];
-                return ListTile(
-                  leading: Checkbox(
-                    value: todo.isCompleted,
-                    onChanged: (_) => _toggleTodo(index),
-                  ),
-                  title: Text(
-                    todo.title,
-                    style: TextStyle(
-                      decoration: todo.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TodoListPage(),
                     ),
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteTodo(index),
-                  ),
-                );
-              },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                child: const Text(
+                  'Open',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}
-
-class TodoItem {
-  String title;
-  bool isCompleted;
-
-  TodoItem({
-    required this.title,
-    this.isCompleted = false,
-  });
 }
