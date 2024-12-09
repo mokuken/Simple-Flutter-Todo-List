@@ -5,24 +5,46 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  void toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'To-Do-It',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MainPage(),
+      theme: _isDarkMode 
+        ? ThemeData.dark(useMaterial3: true)
+        : ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            useMaterial3: true,
+          ),
+      home: MainPage(toggleTheme: toggleTheme, isDarkMode: _isDarkMode),
     );
   }
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  final VoidCallback toggleTheme;
+  final bool isDarkMode;
+  
+  const MainPage({
+    super.key, 
+    required this.toggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +69,10 @@ class MainPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const TodoListPage(),
+                      builder: (context) => TodoListPage(
+                        toggleTheme: toggleTheme,
+                        isDarkMode: isDarkMode,
+                      ),
                     ),
                   );
                 },
@@ -55,8 +80,8 @@ class MainPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
-                  'Open',
-                  style: TextStyle(fontSize: 20),
+                  'Get Started',
+                  style: TextStyle(fontSize: 24),
                 ),
               ),
             ),

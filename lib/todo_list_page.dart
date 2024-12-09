@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class TodoListPage extends StatefulWidget {
-  const TodoListPage({super.key});
+  final VoidCallback toggleTheme;
+  final bool isDarkMode;
+
+  const TodoListPage({
+    super.key,
+    required this.toggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   State<TodoListPage> createState() => _TodoListPageState();
@@ -109,14 +116,13 @@ class _TodoListPageState extends State<TodoListPage> {
                 return ListTile(
                   leading: Checkbox(
                     value: todo.isCompleted,
-                    onChanged: (_) => _toggleTodo(index),
+                    onChanged: (bool? value) => _toggleTodo(index),
                   ),
                   title: Text(
                     todo.title,
                     style: TextStyle(
-                      decoration: todo.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
+                      decoration:
+                          todo.isCompleted ? TextDecoration.lineThrough : null,
                     ),
                   ),
                   trailing: IconButton(
@@ -126,10 +132,31 @@ class _TodoListPageState extends State<TodoListPage> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddTodoModal,
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 30.0),
+            child: FloatingActionButton(
+              heroTag: 'themeButton',
+              onPressed: widget.toggleTheme,
+              child: Icon(
+                widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              ),
+            ),
+          ),
+          const Spacer(),
+          FloatingActionButton(
+            heroTag: 'addButton',
+            onPressed: () {
+              _controller.clear();
+              _showAddTodoModal();
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
